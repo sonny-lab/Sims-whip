@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+:root, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+html, body, #root {
+  overflow: hidden;
+  width: 100%;
+}
+
+body {
+  background-color: black;
+}
+
