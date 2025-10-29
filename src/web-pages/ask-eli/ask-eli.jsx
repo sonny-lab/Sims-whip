@@ -1,66 +1,96 @@
 import React, { useState } from "react";
-import eliImage from "./assets/ask-eli.png"; // CONFIRMED CORRECT PATH
+import { Link } from "react-router-dom"; // 1. Added Link for navigation
+import askEliImage from "./assets/ask-eli.png";
+import actualEliImage from "./assets/actual-eli.png";
+
+// We no longer need this component, as we're using Link directly
+// import BackHomeNav from "../../components/BackHomeNav.jsx";
 
 const AskEliPage = () => {
-  const [showMenu, setShowMenu] = useState(false);
+  const [showActualEli, setShowActualEli] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 2. State for dropdown
 
-  const toggleMenu = () => setShowMenu(!showMenu);
-
-  const handleSelection = (option) => {
-    setShowMenu(false);
-    if (option === "Development") {
-      window.location.href = "/development";
-    } else if (option === "Game Entrance") {
-      window.location.href = "/game-entrance";
-    }
+  // 3. Moved "Ask Eli" logic here and added menu closing
+  const handleAskEliClick = () => {
+    setShowActualEli((p) => !p);
+    setIsDropdownOpen(false); // Close dropdown after clicking
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black text-white">
-      {/* Background Image */}
+    <div className="relative w-full h-screen overflow-hidden bg-black text-white flex flex-col items-center justify-center">
       <img
-        src={eliImage}
-        alt="Ask Eli"
+        src={showActualEli ? actualEliImage : askEliImage}
+        alt="Ask Eli Scene"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
-
-      {/* Main Button and Menu Container */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        
-        {/* Main Button (was open) */}
+      {/* --- Start: New Dropdown Button --- */}
+      <div className="relative z-10">
+        {/* Dropdown Trigger Button */}
         <button
-          onClick={toggleMenu}
-          className="px-6 py-3 bg-indigo-700/80 hd text-xl font-bold rounded hover:bg-indigo-600 transition duration-300"
-        > 
-          Ask Eli...
-        </button> 
-        
-        {/* Dropdown Menu Logic */}
-        {showMenu && (
-          <div className="mt-4 bg-gray-800 p-2 rounded shadow-lg z-10">
-            <button
-              onClick={() => handleSelection("Development")}
-              className="block w-full text-left py-2 px-4 hover:bg-gray-700"
+          onClick={() => setIsDropdownOpen((p) => !p)}
+          className="px-8 py-3 bg-black/80 text-white text-lg font-serif rounded-md border border-gray-500 hover:bg-black/90 transition flex items-center space-x-2"
+        >
+          <span>Menu</span>
+          {/* Chevron icon for visual cue */}
+          <svg
+            className={`w-4 h-4 transition-transform ${
+              isDropdownOpen ? "rotate-180" : "rotate-0"
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+
+        {/* Dropdown Menu */}
+        {isDropdownOpen && (
+          <div className="absolute top-full right-0 mt-2 w-48 bg-black/90 rounded-md border border-gray-500 shadow-lg py-1">
+            {/* Option 1: Home */}
+            <Link
+              to="/home-page-2"
+              onClick={() => setIsDropdownOpen(false)} // Close on navigation
+              className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700/80 transition"
             >
-              Development
-            </button>
+              Home
+            </Link>
+
+            {/* Option 2: Ask Eli */}
             <button
-              onClick={() => handleSelection("Game Entrance")}
-              className="block w-full text-left py-2 px-4 hover:bg-gray-700"
+              onClick={handleAskEliClick}
+              className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700/80 transition"
             >
-              Game Entrance
+              Ask Eli
             </button>
           </div>
         )}
+      </div>
+      {/* --- End: New Dropdown Button --- */}
 
-      </div> {/* This closes the Main Button and Menu Container div */}
+      {/* The original buttons are now removed and replaced by the dropdown:
 
-    </div> // This closes the root div
-  ); // This closes the return statement
-}; // This closes the component function
+        <button ... >
+          Ask Eli
+        </button>
+        <BackHomeNav backTo="/home-page-2" className="z-10" />
+      */}
+    </div>
+  );
+};
 
 export default AskEliPage;
+
+
+
+
+
+
 

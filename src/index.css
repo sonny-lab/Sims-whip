@@ -1,22 +1,72 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root, body, #root {
+/* --- Global Layout --- */
+html,
+body,
+#root {
   height: 100%;
-  margin: 0;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-html, body, #root {
-  overflow: hidden;
   width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  color: #fff;
+  font-family: "Times New Roman", serif;
+  overflow: hidden;
 }
 
-body {
-  background-color: black;
+/* --- Smooth Fades --- */
+.transition-opacity {
+  transition-property: opacity;
+  transition-duration: 1.5s;
+  transition-timing-function: ease-in-out;
+}
+
+/* --- Title / Text --- */
+h1,
+h2,
+h3 {
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.15);
+  letter-spacing: 0.1em;
+}
+
+p {
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+/* --- Buttons --- */
+button {
+  transition: all 0.3s ease-in-out;
+  font-family: "Times New Roman", serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+button:hover {
+  transform: scale(1.04);
+}
+
+/* --- Images / Video --- */
+img,
+video {
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* --- Scroll Lock for immersive scenes --- */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Responsive Scaling --- */
+@media (max-width: 1024px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  p {
+    font-size: 0.9rem;
+  }
 }
 

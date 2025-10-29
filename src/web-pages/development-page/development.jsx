@@ -1,86 +1,147 @@
-import React, { useState } from "react";
-import devImage from "./assets/dev-image.png";
+// src/web-pages/development-page/development.jsx
+import React, { useState, useEffect, useRef } from "react"; // 1. Added useRef
+import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import backgroundImage from "./assets/dev-image.png";
 
 const DevelopmentPage = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showContent, setShowContent] = useState(false);
+  const [files, setFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState("");
+  const [content, setContent] = useState("");
+  const [isNavOpen, setIsNavOpen] = useState(false);
+  
+  const logSelectorRef = useRef(null); // 2. Ref to target the log selector
 
-  const toggleMenu = () => setShowMenu(!showMenu);
-
-  const handleSelection = (option) => {
-    setShowMenu(false);
-    if (option === "Articles") setShowContent(true);
-    if (option === "Ask Eli") {
-      // later this will trigger Eli’s dialog or navigation
-      console.log("Summon Eli...");
+  // Handler for the "MD Files" option
+  const handleMDFilesClick = () => {
+    // Focus the log selector dropdown
+    if (logSelectorRef.current) {
+      logSelectorRef.current.focus();
     }
+    setIsNavOpen(false); // Close the navigation dropdown
   };
+
+  // Load markdown dev logs dynamically
+  useEffect(() => {
+    const importAll = import.meta.glob("./content/*.md", { as: "raw" });
+    const entries = Object.keys(importAll).map((path) => {
+      const name = path.split("/").pop().replace(".md", "");
+      return { name, loader: importAll[path] };
+    });
+    setFiles(entries);
+  }, []);
+
+  // Load selected markdown file
+  useEffect(() => {
+    if (!selectedFile) return;
+    const file = files.find((f) => f.name === selectedFile);
+    if (file) file.loader().then((data) => setContent(data));
+  }, [selectedFile, files]);
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-black text-white">
       {/* Background */}
       <img
-        src={devImage}
-        alt="Development Chamber"
-        className="absolute inset-0 w-full h-full object-cover"
+        src={backgroundImage}
+        alt="Development Background"
+        className="absolute inset-0 w-full h-full object-contain"
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 p-6">
+        <h1 className="text-4xl font-serif tracking-widest mb-8">
+          Development Logs
+        </h1>
 
-      {/* Button that opens dropdown */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <button
-          onClick={toggleMenu}
-          className="px-6 py-3 bg-amber-700/80 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-lg transition"
+        {/* Log Selector Dropdown (Now uses the ref) */}
+        <select
+          ref={logSelectorRef} // 3. Attached the ref here
+          className="bg-black/70 border border-gray-500 px-4 py-2 mb-8 rounded-lg text-lg font-serif hover:bg-black/90 focus:outline-none"
+          value={selectedFile}
+          onChange={(e) => setSelectedFile(e.target.value)}
         >
-          Development
-        </button>
+          <option value="">Select a Log</option>
+          {files.map((file) => (
+            <option key={file.name} value={file.name}>
+              {file.name}
+            </option>
+          ))}
+        </select>
 
-        {/* Dropdown */}
-        {showMenu && (
-          <div className="absolute top-full mt-2 bg-neutral-900/90 rounded-md shadow-lg w-44 border border-amber-700">
-            <button
-              onClick={() => handleSelection("Ask Eli")}
-              className="block w-full text-left px-4 py-2 hover:bg-amber-800 rounded-t-md"
-            >
-              Ask Eli
-            </button>
-            <button
-              onClick={() => handleSelection("Articles")}
-              className="block w-full text-left px-4 py-2 hover:bg-amber-800 rounded-b-md"
-            >
-              Articles
-            </button>
+        {/* Markdown Display */}
+        {content && (
+          <div className="bg-black/60 border border-gray-700 rounded-xl p-6 max-w-3xl w-full h-[60vh] overflow-y-auto text-left">
+            <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         )}
-      </div>
 
-      {/* Content overlay */}
-      {showContent && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm z-20">
-          <div className="w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] overflow-y-auto p-6 bg-neutral-800/90 border border-amber-700 rounded-xl shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-amber-400">
-              Development Articles
-            </h2>
-            <p className="text-gray-300">
-              {/* Later: render markdown from /content */}
-              (Markdown content loads here)
-            </p>
-            <div className="text-center mt-6">
+        {/* --- New Navigation Dropdown Menu --- */}
+        <div className="absolute bottom-10 z-10">
+          {/* Dropdown Trigger Button */}
+          <button
+            onClick={() => setIsNavOpen((p) => !p)}
+            className="px-8 py-3 bg-black/80 text-white text-lg font-serif rounded-md border border-gray-500 hover:bg-black/90 transition flex items-center space-x-2"
+          >
+            <span>Menu</span>
+            <svg
+              className={`w-4 h-4 transition-transform ${
+                isNavOpen ? "rotate-180" : "rotate-0"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {/* Dropdown Menu */}
+          {isNavOpen && (
+            <div className="absolute bottom-full right-0 mb-2 w-48 bg-black/90 rounded-md border border-gray-500 shadow-lg py-1">
+              
+              {/* Option 1: MD Files (Button to focus log selector) */}
               <button
-                onClick={() => setShowContent(false)}
-                className="px-4 py-2 bg-amber-700 hover:bg-amber-600 rounded-md transition"
+                onClick={handleMDFilesClick}
+                className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700/80 transition"
               >
-                Close
+                MD Files
               </button>
+
+              {/* Option 2: Home (Link) */}
+              <Link
+                to="/home-page"
+                onClick={() => setIsNavOpen(false)} 
+                className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700/80 transition"
+              >
+                Home
+              </Link>
+              
+              {/* Option 3: Ideas (Placeholder Link) */}
+              <Link
+                to="/ideas-page" // <-- Placeholder link for the "Ideas" page
+                onClick={() => setIsNavOpen(false)}
+                className="block w-full text-left px-4 py-2 text-white hover:bg-gray-700/80 transition"
+              >
+                Ideas
+              </Link>
+              
             </div>
-          </div>
+          )}
         </div>
-      )}
+        {/* --- End: New Navigation Dropdown Menu --- */}
+      </div>
     </div>
   );
 };
 
 export default DevelopmentPage;
+
+
+
 

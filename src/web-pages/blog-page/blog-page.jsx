@@ -1,93 +1,121 @@
+// src/web-pages/blog-page/marble-room.jsx
 import React, { useState } from "react";
-import blogImage from "./assets/blog-hero-header.png";
+import { useNavigate } from "react-router-dom";
+import marbleRoom from "./assets/marble-room.png";
+import crystalButtons from "./assets/crystal-buttons.png";
 
-const Blog = () => {
-  const [showMenu, setShowMenu] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-
-  const toggleMenu = () => setShowMenu(!showMenu);
-
-  const handleSelection = (option) => {
-    setShowMenu(false);
-    if (option === "Development") {
-      window.location.href = "/development";
-    } else if (option === "Ask Eli") {
-      window.location.href = "/ask-eli";
-    } else if (option === "Articles") {
-      setShowContent(true);
-    }
-  };
+export default function MarbleRoom() {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black text-white">
+    <div className="relative w-screen h-screen overflow-hidden bg-black">
       {/* Background */}
       <img
-        src={blogImage}
-        alt="Blog Background"
+        src={marbleRoom}
+        alt="Marble Room"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" />
+      {/* Podium Container */}
+      <div
+        className="absolute"
+        style={{
+          width: "498px",
+          height: "493px",
+          left: "50%", // visually centered on floor
+          top: "58%", // adjust to match your apex spot visually
+          transform: "translate(-50%, -50%)",
+        }}
+      >
+        <img
+          src={crystalButtons}
+          alt="Crystal Podium"
+          className="absolute top-0 left-0 w-full h-full pointer-events-none select-none"
+        />
 
-      {/* Central Button */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <button
-          onClick={toggleMenu}
-          className="px-6 py-3 bg-amber-700/80 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-lg transition"
-        >
-          Blog
-        </button>
+        {/* BLOG button (invisible clickable zone) */}
+        <div
+          onClick={() => navigate("/expanded")}
+          className="absolute cursor-pointer"
+          style={{
+            left: "32%",
+            top: "15.2%",
+            width: "13.6%",
+            height: "7.6%",
+            backgroundColor: "transparent",
+          }}
+          aria-label="Blog"
+        />
 
-        {/* Dropdown */}
-        {showMenu && (
-          <div className="absolute top-full mt-2 bg-neutral-900/90 rounded-md shadow-lg w-44 border border-amber-700">
+        {/* MENU button trigger */}
+        <div
+          onClick={() => setOpen(!open)}
+          className="absolute cursor-pointer"
+          style={{
+            left: "50.4%",
+            top: "16%",
+            width: "15.2%",
+            height: "6.2%",
+            backgroundColor: "transparent",
+          }}
+          aria-label="Menu dropdown trigger"
+        />
+
+        {/* Dropdown Menu */}
+        {open && (
+          <div
+            className="absolute z-50 flex flex-col text-black font-serif"
+            style={{
+              left: "50.4%",
+              top: "23%",
+              width: "15.2%",
+              backgroundColor: "rgba(255,255,255,0.9)", // subtle glassy white
+              borderRadius: "4px",
+              animation: "fadeIn 0.3s ease-in-out",
+            }}
+          >
             <button
-              onClick={() => handleSelection("Development")}
-              className="block w-full text-left px-4 py-2 hover:bg-amber-800 rounded-t-md"
+              onClick={() => navigate("/home-page")}
+              className="px-3 py-2 text-left hover:bg-black hover:text-white transition-all duration-300"
             >
-              Development
+              Home
             </button>
             <button
-              onClick={() => handleSelection("Ask Eli")}
-              className="block w-full text-left px-4 py-2 hover:bg-amber-800"
+              onClick={() => navigate("/comment")}
+              className="px-3 py-2 text-left hover:bg-black hover:text-white transition-all duration-300"
             >
-              Ask Eli
+              Comment
             </button>
             <button
-              onClick={() => handleSelection("Articles")}
-              className="block w-full text-left px-4 py-2 hover:bg-amber-800 rounded-b-md"
+              onClick={() => navigate("/like")}
+              className="px-3 py-2 text-left hover:bg-black hover:text-white transition-all duration-300"
             >
-              Articles
+              Like
             </button>
           </div>
         )}
       </div>
 
-      {/* Articles Modal */}
-      {showContent && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm z-20">
-          <div className="w-11/12 md:w-3/4 lg:w-1/2 max-h-[80vh] overflow-y-auto p-6 bg-neutral-800/90 border border-amber-700 rounded-xl shadow-2xl">
-            <h2 className="text-2xl font-bold mb-4 text-amber-400">
-              Blog Articles
-            </h2>
-            <p className="text-gray-300">
-              (Your blog posts or scroll animations will render here.)
-            </p>
-            <div className="text-center mt-6">
-              <button
-                onClick={() => setShowContent(false)}
-                className="px-4 py-2 bg-amber-700 hover:bg-amber-600 rounded-md transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Fade animation */}
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
-};
+}
 
-export default Blog;
+
+
+
+
+      
+
+
+
+
+
 
